@@ -1,0 +1,9 @@
+Intro to C
+Goals
+- become moderately proficient
+- Be able to read source code from Postgres, linux
+- Learn more about computer architecture, CPU, etc.
+
+Notes
+- clang is the driver 
+- 
