@@ -6,52 +6,63 @@
 
 // Use an underlying C array
 // Accommodate any data type - integers, floats
-// 1. Define the struct
-// 2. Implement new, size and free 
-// 3. Push pop set and get without resizing
-// 4. Resize
+// 1. Define the struct [x]
+// 2. Implement new, size and free [x]
+// 3. Push pop set and get without resizing [x]
+// 4. Resize [x] - double the array size if it is about to exceed the capacity
 typedef struct DA {
-  // TODO define our struct - has the C array
-  // determine the size of the array
-  // int arr[0];
-  int size;
+  void** items; // the starting location of a pointer to anything
+  int size; // number of items in the array
+  int capacity; 
 } DA;
 
 
 DA* DA_new (void) {
   // TODO allocate and return a new dynamic array
-  struct DA da = {};
-  da.size = 0;
-  // da.arr = {};
-  struct DA *da_ptr = &da;
-
-  return da_ptr;
+  DA* da = malloc(sizeof(DA));
+  da->size = 0;
+  da->capacity = STARTING_CAPACITY;
+  da->items = malloc(da->capacity * sizeof(void *));
+  return da;
 }
 
 int DA_size(DA *da) {
-  printf("size of arr is %d\n", da->size);
   return da->size;
 }
 
 void DA_push (DA* da, void* x) {
-  // TODO push to the end
+  if (da->size == da->capacity) 
+  {
+    da->capacity *= 2;
+    da->items = realloc(da->items, da->capacity * sizeof(void *));
+  }
+  da->items[da->size] = x;
+  da->size++;
 }
 
 void *DA_pop(DA *da) {
-  // TODO pop from the end
+  if (da->size == 0) {
+    return NULL;
+  }
+
+  return da->items[--da->size];
 }
 
 void DA_set(DA *da, void *x, int i) {
-  // TODO set at a given index, if possible
+  if (i < 0 || i > da->size) return;
+
+  da->items[i] = x;
 }
 
 void *DA_get(DA *da, int i) {
-  // TODO get from a given index, if possible
+  assert(i < da->size && i >= 0);
+  return da->items[i];
 }
 
 
 void DA_free(DA *da) {
-  // TODO deallocate anything on the heap
+  free(da->items);
+  free(da);
 }
 
 int main() {
@@ -59,13 +70,11 @@ int main() {
 
     assert(DA_size(da) == 0);
 
-    // basic push and pop test
     int x = 5;
     float y = 12.4;
     DA_push(da, &x);
     DA_push(da, &y);
     assert(DA_size(da) == 2);
-
     assert(DA_pop(da) == &y);
     assert(DA_size(da) == 1);
 
@@ -101,4 +110,3 @@ int main() {
     DA_free(da2);
     printf("OK\n");
 }
- 
