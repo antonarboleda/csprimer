@@ -1,0 +1,11 @@
+12/6 
+Today I spent 1 hour on the exercise. I watched the pointers videos and probably 
+am going to need to watch it and practice pointers several more times. 
+
+What I think I need to do is free the memory from the heap
+
+Questions remaining 
+- How do I delete an item?
+- What I think I need to do is free the memory where that last element 
+exicted and decrement the tail of the pointer.
+
