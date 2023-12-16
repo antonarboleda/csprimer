@@ -1,14 +1,5 @@
-"""
-Plan: [] Write a hex to rgb converter
-         [x] 6 digits
-         [x] 4 digits
-         [x] 3 digits
-         [x] 8 digits
-      [] Parse CSS file, get the hex values and ouput a new css file 
-         with output values
-         
+import sys
 
-"""
 alpha_to_decimal = {
     "a": 10, 
     "b": 11, 
@@ -36,7 +27,7 @@ def six_digit_hex(hex):
         else:
             val <<= 4 # move the 4 right bits 4 to the left
     r, g, b = rgb_values
-    return f"rgb({r}, {g}, {b})"
+    return f"rgb({r} {g} {b})"
 
 def three_digit_hex(hex):
     rgb_values = []
@@ -51,7 +42,7 @@ def three_digit_hex(hex):
         rgb_values.append(val)
         val = 0
     r, g, b = rgb_values
-    return f"rgb({r}, {g}, {b})"    
+    return f"rgb({r} {g} {b})"    
 
 def four_digit_hex(hex):
     rgb_values = []
@@ -67,7 +58,7 @@ def four_digit_hex(hex):
         val = 0
     r, g, b, a = rgb_values
     alpha_val = '%.5f'%(a / 255)
-    return f"rgba({r}, {g}, {b} / {alpha_val})"   
+    return f"rgba({r} {g} {b} / {alpha_val})"   
 
 def eight_digit_hex(hex):
     rgb_values = []
@@ -84,7 +75,7 @@ def eight_digit_hex(hex):
             val <<= 4 # move the 4 right bits 4 to the left
     r, g, b, a = rgb_values
     alpha_val = '%.5f'%(a / 255)
-    return f"rgba({r}, {g}, {b} / {alpha_val})"
+    return f"rgba({r} {g} {b} / {alpha_val})"
 
 def hex_to_rgb(hex):
     if len(hex) - 1 == 3:
@@ -99,12 +90,24 @@ def hex_to_rgb(hex):
     
 
 if __name__ == "__main__":
-    assert hex_to_rgb('#00ff00') == 'rgb(0, 255, 0)'
-    assert hex_to_rgb("#A52A2A") == "rgb(165, 42, 42)"
-    assert hex_to_rgb("#DC143C") == "rgb(220, 20, 60)"
-    assert hex_to_rgb("#E9967A") == "rgb(233, 150, 122)"
-    assert hex_to_rgb("#E9967A") == "rgb(233, 150, 122)"
-    assert hex_to_rgb("#123") == "rgb(17, 34, 51)"
-    assert hex_to_rgb("#00f8") == "rgba(0, 0, 255 / 0.53333)"
-    assert hex_to_rgb("#0000FFC0") == "rgba(0, 0, 255 / 0.75294)"
-    print("OK")
+    # assert hex_to_rgb('#00ff00') == 'rgb(0, 255, 0)'
+    # assert hex_to_rgb("#A52A2A") == "rgb(165, 42, 42)"
+    # assert hex_to_rgb("#DC143C") == "rgb(220, 20, 60)"
+    # assert hex_to_rgb("#E9967A") == "rgb(233, 150, 122)"
+    # assert hex_to_rgb("#E9967A") == "rgb(233, 150, 122)"
+    # assert hex_to_rgb("#123") == "rgb(17, 34, 51)"
+    # assert hex_to_rgb("#00f8") == "rgba(0, 0, 255 / 0.53333)"
+    # assert hex_to_rgb("#0000FFC0") == "rgba(0, 0, 255 / 0.75294)"
+    # cat simple.css | python3 convert.py
+    # diff <(cat advanced.css | python3 color_convert.py) advanced_expected.css
+    # diff <(cat simple.css | python3 color_convert.py) simple_expected.css
+    for line in sys.stdin:
+        if "*" in line:
+            sys.stdout.write(line)
+        elif "#" in line:
+            r = l = line.index("#")
+            while r < len(line) and line[r] != ";":
+                r += 1
+            sys.stdout.write(f"{line[:l]}{hex_to_rgb(line[l:r])};\n")
+        else:
+            sys.stdout.write(line)
