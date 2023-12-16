@@ -1,5 +1,5 @@
 import sys
-
+import re
 alpha_to_decimal = {
     "a": 10, 
     "b": 11, 
@@ -8,6 +8,7 @@ alpha_to_decimal = {
     "e": 14, 
     "f": 15,
 }
+
 def char_to_decimal(char) -> int:
     if char.isdigit():
         return int(char)
@@ -90,24 +91,8 @@ def hex_to_rgb(hex):
     
 
 if __name__ == "__main__":
-    # assert hex_to_rgb('#00ff00') == 'rgb(0, 255, 0)'
-    # assert hex_to_rgb("#A52A2A") == "rgb(165, 42, 42)"
-    # assert hex_to_rgb("#DC143C") == "rgb(220, 20, 60)"
-    # assert hex_to_rgb("#E9967A") == "rgb(233, 150, 122)"
-    # assert hex_to_rgb("#E9967A") == "rgb(233, 150, 122)"
-    # assert hex_to_rgb("#123") == "rgb(17, 34, 51)"
-    # assert hex_to_rgb("#00f8") == "rgba(0, 0, 255 / 0.53333)"
-    # assert hex_to_rgb("#0000FFC0") == "rgba(0, 0, 255 / 0.75294)"
-    # cat simple.css | python3 convert.py
-    # diff <(cat advanced.css | python3 color_convert.py) advanced_expected.css
-    # diff <(cat simple.css | python3 color_convert.py) simple_expected.css
-    for line in sys.stdin:
-        if "*" in line:
-            sys.stdout.write(line)
-        elif "#" in line:
-            r = l = line.index("#")
-            while r < len(line) and line[r] != ";":
-                r += 1
-            sys.stdout.write(f"{line[:l]}{hex_to_rgb(line[l:r])};\n")
-        else:
-            sys.stdout.write(line)
+    sys.stdout.write(
+        re.sub(r'#[0-9a-fA-F]+', 
+        lambda x: hex_to_rgb(x.group(0)), 
+        sys.stdin.read())
+    )
