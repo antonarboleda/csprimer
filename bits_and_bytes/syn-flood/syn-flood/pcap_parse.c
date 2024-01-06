@@ -91,10 +91,9 @@ int main ()
         assert(protocolType == 2);
         
         uint8_t versionIHL = toBigEndian(packetBuffer, 4, 1);
-        uint8_t version = (versionIHL & 0x40) >> 4;        
-        assert(version == 4);
+        assert((versionIHL & 0x40) >> 4 == 4);
         uint8_t IHL = versionIHL & 0x05;
-        assert(IHL == 5);
+        assert( versionIHL & 0x05 == 5);
 
         // 6 is TCP
         uint32_t ipProtocol = toBigEndian(packetBuffer, 13, 1);
