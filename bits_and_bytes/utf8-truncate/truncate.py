@@ -13,7 +13,6 @@ def is_len_three(b):
 def is_len_four(b):
     return b > 0xf0
 
-NEWLINE = ord("\n")
 with open("./cases", "rb") as f:
     lines = f.readlines()
     for index, l in enumerate(lines):
