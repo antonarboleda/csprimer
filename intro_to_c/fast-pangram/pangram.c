@@ -1,28 +1,34 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <math.h>
 
 bool ispangram(char *s) {
   size_t i = 0;
-  size_t j = 0;
-  int all_on = 0;
-  int bitset = 0;
-  size_t len = strlen(s);
-  char c;
+  uint32_t bitmap = 0;
+  uint8_t A = 0x41;
+  uint8_t Z = 0x5a;
+  uint8_t a = 0x61;
+  uint8_t z = 0x7a;
+  
+  char c; 
+  int mask = 0x03ffffff; // lower order 26 bits are on
 
-  for (i = 0; i < len; i++) {
+  do {
     c = s[i];
-    if (isalnum(tolower(c))) {
-      // c - 'a' will always be an integer in the range 
-      // of 0 to 25
-      bitset |= (1 << (c - 'a'));
-    }
-  }
 
-  return bitset == 0x03ffffff;
+    // convert to lower case
+    if (s[i] <= Z && s[i] >= A) {
+      c = s[i] + 32;
+    }
+
+    // At this point, c is alphabetical so we can turn on the 0 to 25th bit
+    if (c >= a && c <= z) {
+      bitmap |= (1 << (c - a));
+    }
+    i++;
+  } while (s[i] != '\0'); 
+
+  return (bitmap & mask) == mask;
 }
 
 int main() {
@@ -39,4 +45,5 @@ int main() {
 
   free(line);
   fprintf(stderr, "ok\n");
+  return 0;
 }
