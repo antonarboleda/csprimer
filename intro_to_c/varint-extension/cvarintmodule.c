@@ -2,12 +2,12 @@
 #include <Python.h>
 
 static PyObject *cvarint_encode(PyObject *self, PyObject *args) {
-    unsigned long n;
+    unsigned long long n;
     int index = 0;
     char part;
     char* bytes = malloc(10);
     
-    if (!PyArg_ParseTuple(args, "k", &n)) {
+    if (!PyArg_ParseTuple(args, "K", &n)) {
         return NULL;
     }
 
@@ -25,7 +25,7 @@ static PyObject *cvarint_encode(PyObject *self, PyObject *args) {
 
 static PyObject *cvarint_decode(PyObject *self, PyObject *args) {
     char* bytes;
-    unsigned long v = 0;
+    unsigned long long v = 0;
     int i = 0;
 
     if (!PyArg_ParseTuple(args, "y", &bytes)) {
@@ -41,7 +41,7 @@ static PyObject *cvarint_decode(PyObject *self, PyObject *args) {
         v <<= 7;
         v |= (bytes[j] & 0x7f);
     }
-    return PyLong_FromUnsignedLong(v);
+    return PyLong_FromUnsignedLongLong(v);
 }
 
 static PyMethodDef CVarintMethods[] = {
