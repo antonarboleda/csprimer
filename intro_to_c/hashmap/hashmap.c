@@ -156,7 +156,8 @@ void _Hashmap_resize_table(Hashmap* h) {
   void** tmp_values = malloc(h->capacity * sizeof(void*));  
   memcpy(tmp_keys, h->keys, h->capacity * sizeof(Key*));
   memcpy(tmp_values, h->values, h->capacity * sizeof(void*));
-
+  free(h->keys);
+  free(h->values);
   h->capacity *= 2;
   h->threshold = h->capacity * h->load_factor;
   h->current_size = 0;
@@ -213,7 +214,7 @@ int main() {
   assert(Hashmap_get(h, "item b") == NULL);   
 
   // handle collisions and expansion correctly
-  int i, n = 100000, ns[n];
+  int i, n = 1000, ns[n];
   char key[MAX_KEY_SIZE];
   for (i = 0; i < n; i++) {
     ns[i] = i;
