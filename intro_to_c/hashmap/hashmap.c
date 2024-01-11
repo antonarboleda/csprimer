@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
+#include <string.h>
 #define STARTING_CAPACITY 80
 #define MAX_KEY_SIZE 50
 #define DATA_EXISTS 1
@@ -10,7 +11,6 @@
 
 typedef struct {
   int flag; // DATA_EXISTS or TOMBSTONE
-  char* key;
   uint32_t hash;
 } Key;
 
@@ -18,6 +18,9 @@ typedef struct {
   Key** keys;
   void** values;
   uint32_t capacity;
+  float load_factor; 
+  uint32_t threshold; // the threshold of # of items before we resizing occurs
+  uint32_t current_size;
 } Hashmap;
 
 // Implements the multiplication hash found in 
@@ -56,23 +59,26 @@ uint32_t hash_to_index(unsigned int hash, uint32_t capacity) {
 }
 
 Hashmap* Hashmap_new() {
-  Hashmap* hashmap = malloc(sizeof(Hashmap));;
-  hashmap->capacity = STARTING_CAPACITY;
-  hashmap->keys = malloc(hashmap->capacity * sizeof(Key*));
-  hashmap->values = malloc(hashmap->capacity * sizeof(void*));
+  Hashmap* h = malloc(sizeof(h));;
+  h->capacity = STARTING_CAPACITY;
+  h->keys = malloc(h->capacity * sizeof(Key*));
+  h->values = malloc(h->capacity * sizeof(void*));
+  h->load_factor = (float).45;
+  h->threshold = h->capacity * h->load_factor;
+  h->current_size = 0;
 
-  return hashmap;
+  return h;
 };
 
-void Hashmap_set(Hashmap* h, char* key, void* value) {
-  unsigned int raw_hash = hash_djb2(key);
+void _Hashmap_insert(Hashmap* h, unsigned int raw_hash, char* value) {
   uint32_t i = hash_to_index(raw_hash, h->capacity);
   uint32_t initial_index = i;
   uint32_t initial_index_seen = 0;
   while (h->keys[i] != NULL) {
     // Handle updates
     if (h->keys[i]->hash == raw_hash) {
-      break;
+      h->values[i] = value;
+      return;
     }
     // At this point, we've gone through full cycle through the 
     if (i == initial_index && initial_index_seen) {
@@ -86,13 +92,12 @@ void Hashmap_set(Hashmap* h, char* key, void* value) {
 
   Key* item = malloc(sizeof(Key));
   item->flag = DATA_EXISTS;
-  item->key = key;
   item->hash = raw_hash;
 
   h->keys[i] = item;
   h->values[i] = value;
+  h->current_size++;
 }
-
 
 void* Hashmap_get(Hashmap* h, char* key) {
   unsigned int raw_hash = hash_djb2(key);
@@ -128,7 +133,8 @@ void Hashmap_delete(Hashmap* h, char* key) {
 
   while (h->keys[i] != NULL) {
     if (h->keys[i]->hash == raw_hash) {
-      break;
+      h->keys[i]->flag = TOMBSTONE;
+      return;
     }    
     
     if ((seen_initial > 0) && i == initial_idx) {
@@ -141,13 +147,36 @@ void Hashmap_delete(Hashmap* h, char* key) {
     // Linear probing
     i = (i + 1) % h->capacity;    
   }
-
-  if (h->keys[i] != NULL) {
-    // Mark item as deleted
-    h->keys[i]->flag = TOMBSTONE;
-  }
   return;
+}
 
+void _Hashmap_resize_table(Hashmap* h) {
+  // Swap old keys and values into new mem locations
+  Key** tmp_keys = malloc(h->capacity * sizeof(Key*));
+  void** tmp_values = malloc(h->capacity * sizeof(void*));  
+  memcpy(tmp_keys, h->keys, h->capacity * sizeof(Key*));
+  memcpy(tmp_values, h->values, h->capacity * sizeof(void*));
+
+  h->capacity *= 2;
+  h->threshold = h->capacity * h->load_factor;
+  h->current_size = 0;
+  // Reassign new key and value pointers
+  h->keys =  malloc(h->capacity * (sizeof(Key)));
+  h->values = malloc(h->capacity * (sizeof(void*)));
+  for (int i = 0; i < h->capacity; i++) {
+    if (tmp_values[i] != NULL && tmp_keys[i] != NULL && tmp_keys[i]->flag == DATA_EXISTS) {
+      _Hashmap_insert(h, tmp_keys[i]->hash, tmp_values[i]);
+    }
+  }  
+}
+
+void Hashmap_set(Hashmap* h, char* key, void* value) {
+  unsigned int raw_hash = hash_djb2(key);
+  if (h->current_size >= h->threshold) {
+    printf("Resizing event - current size %d is above threshold: %d\n", h->current_size, h->threshold);
+    _Hashmap_resize_table(h);
+  }
+  _Hashmap_insert(h, raw_hash, value);
 }
 
 void Hashmap_free(Hashmap *h) {
@@ -164,15 +193,17 @@ int main() {
   Hashmap_set(h, "item a", &a);
   Hashmap_set(h, "item b", &b);
 
-
   assert(Hashmap_get(h, "item a") == &a);
   assert(Hashmap_get(h, "item b") == &b);
   assert(Hashmap_get(h, "non existent") == NULL);   
+  uint32_t expected_size = 2;
+  assert(h->current_size == expected_size);
   // using the same key should override the previous value
   int c = 20;
   Hashmap_set(h, "item a", &c);
   assert(Hashmap_get(h, "item a") == &c);   
-  
+  // size shouldn't increase if we update a value
+  assert(h->current_size == expected_size);
 
   // basic delete functionality
   Hashmap_delete(h, "item a");
@@ -180,10 +211,9 @@ int main() {
   Hashmap_delete(h, "item b");
   assert(Hashmap_get(h, "item a") == NULL);   
   assert(Hashmap_get(h, "item b") == NULL);   
-    
-  // handle collisions correctly
-  // note: this doesn't necessarily test expansion
-  int i, n = 50, ns[n];
+
+  // handle collisions and expansion correctly
+  int i, n = 100000, ns[n];
   char key[MAX_KEY_SIZE];
   for (i = 0; i < n; i++) {
     ns[i] = i;
@@ -195,7 +225,6 @@ int main() {
     sprintf(key, "item %d", i);
     assert(Hashmap_get(h, key) == &ns[i]);
   }
-
   Hashmap_free(h);
   printf("ok\n");
   exit(0);  
