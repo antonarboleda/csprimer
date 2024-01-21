@@ -20,19 +20,19 @@ global rfact
 fib:
 	push rbp ; save rbp to stack
 	push rbx ; save rbx to stack
-	mov rbp, rdi ; save value of n to rbp
-	mov rax, rdi ; result = n
-	cmp rdi, 1 ; n <= 1?
+	mov ebp, edi ; save value of n to rbp
+	mov eax, edi ; result = n
+	cmp edi, 1 ; n <= 1?
 	jle .done
 
-	sub rbp, 1 ; n - 1
-	mov rdi, rbp ; move into 1st arg
+	sub ebp, 1 ; n - 1
+	mov edi, ebp ; move into 1st arg
 	call fib ; fib(n - 1)
-	mov rbx, rax ; save result
-	sub rbp, 1 ; todo use lea 
-	mov rdi, rbp ; move rbp into first arg
+	mov ebx, eax ; save result
+	sub ebp, 1 ; todo use lea 
+	mov edi, ebp ; move rbp into first arg
 	call fib ; fib(n - 2)
-	add rax, rbx ; result = fib(n - 1) + fib(n - 2)
+	add eax, ebx ; result = fib(n - 1) + fib(n - 2)
 .done:
 	pop rbx
 	pop rbp
