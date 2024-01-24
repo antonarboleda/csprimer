@@ -23,5 +23,9 @@ the microprocessor to parallelize operations if you are CPU bound.
 - This is a more in depth look inside the interface of a CPU and it's microarchitecture. 
 The diagram is useful and can be applied to many concepts in computer science when 
 it comes to parallelization and performance optimization
+- Compilers are amazing and can do a good job of doing branch prediction. If else 
+statements slow down a program because of branch prediction. Each mispredicted 
+branch has to be flushed.
+
 
 
