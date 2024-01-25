@@ -59,3 +59,6 @@ after the CS Primer's OS course!
 the python module
 - Try and get down to the data you need when passing between methods, loading
 data from memory to use locality and have data be closer together.
+- A main reason of why python is slow is due to pointer chasing. The data structures
+like Classes and hash tables use pointers rather than a C array which you have 
+to explicitly declare a type.
