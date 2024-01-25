@@ -51,5 +51,11 @@ of cache utilization.
 - Linked list is bascially pointer chasing. Every time you follow a new pointer, 
 it is a cache miss to load that data and you don't utilize any caching.
 
-
-
+1/25/24
+- Performance Engineering guide https://en.algorithmica.org/hpc/cpu-cache/
+- Casey Muratori's Performance Aware course looks like something to take 
+after the CS Primer's OS course!
+- Going to read CSAPP and and the perf guide on algorithmica.org before starting
+the python module
+- Try and get down to the data you need when passing between methods, loading
+data from memory to use locality and have data be closer together.
