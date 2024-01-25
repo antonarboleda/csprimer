@@ -27,5 +27,29 @@ it comes to parallelization and performance optimization
 statements slow down a program because of branch prediction. Each mispredicted 
 branch has to be flushed.
 
+1/24 CPU Caches https://csprimer.com/watch/cpu-caches/
+- When programming, be aware of CPU caches to improve program performance.
+- Space is time. If you make something smaller, it fits into cache or storage
+better and it will take less time to process, load, etc...
+- Hertz = # times per second. Giga = billion. 4 Gigahertz == 4 billion times per second
+- The size of numerical types do matter. If you smaller data types, the operations
+on those values will be faster. If a cache line is 64 bytes, you can fit 16 4 byte
+integers in the cache line. If you use 2 byte shorts, you can fit 32 of them 
+inside the cache line.
+- array of structs vs struct of arrays. If you load an array of structs
+into memory i.e. Struct User{age, height, name} but only need their name, 
+the cache line will be filled with properties that you don't really need. 
+Can you organize the to have a usernames[], userheights[], userages[]? Think 
+of aggregation or analytical procedures that you need to do. Columnmar 
+databases are organized this way
+- Pointer chasing. In a relational DB or ORM, you go from memory address 
+to memory address, following pointers to find a value
+- One of the reasons python, ruby and JS are slow is because the data 
+structures that are used are heterogeneous and use pointers as the interface
+to different types. So you get a pointer chasing effect which ignores the use
+of cache utilization.
+- Linked list is bascially pointer chasing. Every time you follow a new pointer, 
+it is a cache miss to load that data and you don't utilize any caching.
+
 
 
