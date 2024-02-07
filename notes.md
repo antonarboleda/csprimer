@@ -62,3 +62,32 @@ data from memory to use locality and have data be closer together.
 - A main reason of why python is slow is due to pointer chasing. The data structures
 like Classes and hash tables use pointers rather than a C array which you have 
 to explicitly declare a type.
+
+CPU Memory 
+- Processors have multiple cores
+- Each core can have multiple threads
+- Question: What's the difference between a core and a CPU?
+- Measure in cycles. 
+- A memory access from the L1 cache is ~4 cycles and ~14 cycles for the ~L2 cache. 
+Prefetching for the L2 cache might bring down the # of cycles from 14 to 9
+- The performance of a memory system isn't characterized by a single number. Instead, it is a mountain of temporal and spatial locality whose elevations can vary over an order of magnitude. Spacial locality can affect the performance of the memory of a system because if items are spatially distanct from each other, it takes more time to process them. Temporal quality corresponds to the size of the data. Larger datasets take more time to process.
+
+CPU Timing
+- I used a multipass VM and worked in VIM to test and make changes
+- Timing when running in user space and in system (kernel) space is measured
+in clock ticks when using the `times()` syscall.
+- When running a process on multiple CPU cores, if they run in parallel on separate CPUs, 
+they should take the same time. If we run multiple processes on a single CPU, the 
+OS will run the programs concurrently. This is one of the main takeaways
+from this exercise. One of the core responsibilities of the OS is to switch 
+between running processes in a way where they can share the underlying CPU
+(across multiple cores if available) without having to explicitly cooperate.
+In order to experiment with multiple cores I had to manually increase the 
+number of cores on my multipass VM. 
+- Learned how to read through through man pages more effectively and use VIM. 
+This tutorial was pretty helpful https://www.youtube.com/watch?v=RzAkjX_9B7E
+- At companies I've worked at, we've used virtual machines for development and 
+this felt similar. A note for my future self - in order to work on this, I mounted
+folders from my local FS onto a multipass shell. 
+ 
+
