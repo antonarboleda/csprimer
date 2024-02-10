@@ -89,5 +89,45 @@ This tutorial was pretty helpful https://www.youtube.com/watch?v=RzAkjX_9B7E
 - At companies I've worked at, we've used virtual machines for development and 
 this felt similar. A note for my future self - in order to work on this, I mounted
 folders from my local FS onto a multipass shell. 
+- When looking at man pages, look at the SEE ALSO section to see if any of the 
+functionality could have helped.
+
+Man Pages
+- "type ls" tells you the type of program ls is. Either a shell builtin or a man page
+- Section 7 gives you a high level overview and is a great place to start to learn
+about a program
+- man uses less as a pager. Press "h" in order to get shortcuts and commands to 
+navigate through man pages
+
+What is the call stack?
+- A mechanism for storing values associated with function invocations. The 
+values associated with a function are stored somewhere so they can be 
+retrieved again.
+
+Stack Overflow Notes
+- segfault might be the error that you would see
+- As the stack overflow is happening, watch it along the way. 
+- What is the depth of function invocations as measured by function calls
+- print the pointer of the stack, see where you are in the stack. 
+- What is the number do you actually get to when you get a stack overflow?
+- Can you change that number? 
+
+1/8 Notes
+- I thought that I would be able use man getrusage's ru_isrss field which tells you the integral stack size, however when I called it it continually returns 0.
+- multipass ubuntu server runs on ARM.
+- man 1 strace - traces system calls and signals
+
+Stack overflow notes
+- The stack pointer chnages 144 bytes every function call. ARM uses 8 byte 
+stack alignment. 144 / 8 = 18
+pthread_attr_getstackaddr (3) - set/get stack address attribute in thread attributes object
+pthread_attr_getstacksize (3) - set/get stack size attribute in thread attributes object
+- Each thread needs to have its own stack, otherwise you will have collisions
+when a thread decides to push or pop
+
+Shell script notes 
  
+VIM shortcuts
+- press colon then type in set number ":set number"
+
 
