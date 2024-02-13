@@ -130,4 +130,20 @@ Shell script notes
 VIM shortcuts
 - press colon then type in set number ":set number"
 
+Byte Write notes
+- man posix_fallocate - allocates
 
+File System notes
+What on-disk structures store the file system’s data and metadata? 
+What happens when a process opens a file? 
+Which on-disk structures are accessed during a read or write? 
+
+**Signals** 2/12/24
+The main take away here is that we can't think of a program as just a a simple 
+fetch, decode and execute. Signals provide a way for the operating system to 
+send messages to processes and create a concept of *exceptional control flow*. 
+With exceptional control flow, a program can perform actions based on signals 
+received. 
+
+Another main takeaway is async signal safety. Read man 7 signal-safety in a linux
+box to learn more about why signal handlers must perform atomic operations.
