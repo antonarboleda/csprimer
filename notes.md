@@ -147,3 +147,29 @@ received.
 
 Another main takeaway is async signal safety. Read man 7 signal-safety in a linux
 box to learn more about why signal handlers must perform atomic operations.
+
+Signal logger 
+- Notes: 
+  - signals are a way to comunicate with the OS and other processes.
+- Goals: 
+    - What are common signals?
+    - Why do we need signals?
+    - Understand signal interfaces
+    - Where do signals fit into user space and kernel (system) space?
+- `kill -l` lists all names and numbers!
+- Look in signal.h for the 32 signals
+- `stty -a` shows you a list of commands. i.e. 
+- SIGTSTP and SIGCONT
+- SIGCHILD - if something changes in a child process, the parent gets notified
+about it.
+- Segmentation Fault (SIGSEGV) - invalid memory reference. This occurs when 
+a program tries to access a location in memory that is illegal. Consider the 
+example below. The variable `str` is a pointer to a read only memory reference. 
+Trying to modify that area of memory is illegal. When memcpy tries to copy "Copy"
+into that memory address a segmentation fault is thrown because it is not possible
+to write modify a read only area of memory.
+
+```
+char* str = "Hello World";
+memcpy(str, "Copy\0", 5);
+```
