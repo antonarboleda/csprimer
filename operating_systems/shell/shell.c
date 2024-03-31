@@ -67,7 +67,7 @@ int main() {
                     dup2(fds[1], STDOUT_FILENO);
                     close(fds[1]);
                     close(fds[0]);
-                printf("readfd: %d\n", readfd);
+                
                 dup2(readfd, STDIN_FILENO);
                 if (execvp(argv[0], argv) < 0) {
                     perror("exec error");
