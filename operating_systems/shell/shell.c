@@ -6,19 +6,10 @@
 #include <stdlib.h>
 #include <signal.h>
 
-/**
- * Fork, setup a pipe, then exec
- * []Proof of concept - implement ls | wc
- * What is the system call to associate ends of a pipe? - dup system call
- */
-
 #define MAX_INPUT_SIZE 1024
 #define MAX_ARGS_SIZE 256
 #define MAX_COMMAND_SIZE 128
-// With '\n' included in the separator string, strtok() will tokenize this 
-// input into "ls", "-l", and "pwd" as separate tokens. Without including 
-// '\n', the program would only tokenize "ls", "-l" as the first command 
-// and never tokenize "pwd" because it doesn't encounter a space after it.
+
 #define SEP " \t\n" 
 #define PIPE "|"
 
