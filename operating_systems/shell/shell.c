@@ -45,15 +45,22 @@ int main() {
         int status = 0;
         printf("$$$ ");
         fgets(user_input, sizeof(user_input), stdin);
+        
+        // tokenize by pipe char
         commands[cmd_i] = strtok(user_input, PIPE);
         while (commands[cmd_i] != NULL) {
             commands[++cmd_i] = strtok(NULL, PIPE);
         }
-        
+
+        int readfd = STDIN_FILENO;
         for (int i = 0; i < cmd_i; i++) {            
             // fork 
             int status;
             int argv_i = 0;
+            int fds[2];
+            
+            pipe(fds);
+
             if ((childpid = fork()) < 0) {
                 perror("fork failure");
                 exit(EXIT_FAILURE);
@@ -64,10 +71,24 @@ int main() {
                 argv[argv_i] = strtok(commands[i], SEP);
                 while (argv[argv_i] != NULL)
                     argv[++argv_i] = strtok(NULL, SEP);   
-                                 
-                execvp(argv[0], argv);
-                printf("%s, %s\n", argv[0], argv[1]);
+
+                if (i < cmd_i - 1)
+                    dup2(fds[1], STDOUT_FILENO);
+                    close(fds[1]);
+                    close(fds[0]);
+                printf("readfd: %d\n", readfd);
+                dup2(readfd, STDIN_FILENO);
+                if (execvp(argv[0], argv) < 0) {
+                    perror("exec error");
+                    exit(EXIT_FAILURE);
+                }
+                exit(EXIT_FAILURE);
             }
+            readfd = fds[0];
+            // parent never needs a copy of the write end
+            // only needs to save the read
+            if (i != cmd_i - 1)
+                close(fds[1]);
         }
 
         while ((wpid = wait(&status)) > 0);
